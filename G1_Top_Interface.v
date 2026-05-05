@@ -1,35 +1,28 @@
-// 补全后的 G1 顶层分发逻辑
-module G1_Top_Interface_Complete (
-    input wire clk,
-    input wire rst_n,
-    inout wire [511:0] ra_bus_data,   // 总线上的大数据
-    input wire [63:0]  ra_bus_addr,   // 决定发给哪个单元的“门牌号”
-    input wire         ra_bus_valid
-    // ... 其他接口省略
-);
+// ... 之前的接口定义保持不变 ...
 
-    // 1. 分发逻辑：根据地址(addr)生成选通信号
-    wire [3:0] unit_sel; // 假设我们有4个计算单元
-    assign unit_sel[0] = (ra_bus_addr[1:0] == 2'b00) && ra_bus_valid;
-    assign unit_sel[1] = (ra_bus_addr[1:0] == 2'b01) && ra_bus_valid;
-    assign unit_sel[2] = (ra_bus_addr[1:0] == 2'b10) && ra_bus_valid;
-    assign unit_sel[3] = (ra_bus_addr[1:0] == 2'b11) && ra_bus_valid;
-
-    // 2. 实例化：把你的“大脑细胞”成排地焊上去
-    // 这里用到了你之前写的 spl_cim_causal_unit
+    // 1. 补全内部信号
+    wire [3:0] unit_valids; // 假设4个单元的反馈
+    
+    // 2. 【关键】把你的 128MB 计算阵列接进来！
+    // 这样数据才会从 NSM 流向真正的存算单元
     generate
         genvar i;
-        for (i=0; i<4; i=i+1) begin : causal_array
-            spl_cim_causal_unit u_unit (
+        for (i=0; i<4; i=i+1) begin : g1_core_array
+            spl_cim_causal_unit u_causal_unit (
                 .clk(clk),
                 .rst_n(rst_n),
-                .wr_en(unit_sel[i]),           // 只有选中的单元才干活
-                .wr_data_p(ra_bus_data[255:0]), // 共享数据总线
-                .wr_data_q(ra_bus_data[511:256]),
-                // ... 其他信号
-                .logic_valid(unit_valids[i])
+                .wr_en(ra_bus_valid && (ra_bus_addr[1:0] == i)), // 分发逻辑
+                .wr_data_p(internal_logic_stream[255:0]),       // 喂入剥离后的逻辑 P
+                .wr_data_q(internal_logic_stream[511:256]),     // 喂入剥离后的逻辑 Q
+                .logic_valid(unit_valids[i])                     // 反馈校验状态
             );
         end
     endgenerate
+
+    // 3. 修正稳定状态输出：只有所有单元都校验通过，才算 PIM 稳定
+    assign pim_state_stable = &unit_valids && sbc_interceptor_ready;
+
+    // 4. 核心逻辑锚定：保持你那个硬核的 Hash 校验
+    assign logic_integrity_verified = (hardware_hash_in[255:0] == 256'h...8525d007);
 
 endmodule
