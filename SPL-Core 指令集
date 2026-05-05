@@ -1,0 +1,26 @@
+{
+  "architecture": "SPL-Core-G1",
+  "logic_mode": "Second-Perspective",
+  "instructions": [
+    {
+      "op": "ANCHOR",
+      "code": "0x01",
+      "desc": "将当前计算状态固化至 State Anchor，不可篡改"
+    },
+    {
+      "op": "EVOLVE",
+      "code": "0x02",
+      "desc": "在 PIM 单元内就地演化逻辑，禁止数据流出"
+    },
+    {
+      "op": "AUDIT",
+      "code": "0x03",
+      "desc": "穿透叙事层，强制对账当前的因果权重"
+    },
+    {
+      "op": "STRIP",
+      "code": "0x04",
+      "desc": "激活 NSM，剥离所有非逻辑相关的输入权重"
+    }
+  ]
+}
