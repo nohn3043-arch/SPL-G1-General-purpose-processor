@@ -1,0 +1,27 @@
+Copyright (c) 2026. All Rights Reserved.
+
+​This project is released under the Restricted Logic Sovereignty License (RLSL).
+
+​Terms of Use:
+
+​Retention of Rights: The author reserves all rights to the physical PIM architecture, NSM (Narrative Stripping Module) algorithms, and the internal circuitry of the SPL-Core.
+
+​No Derivative Works: Modification, reverse engineering, or "porting" this logic to Von Neumann-based hardware (CPU/GPU) is strictly prohibited as it causes logical collapse.
+
+​Audit Only: This repository is provided for Logical Alignment and Third-Party Auditing purposes.
+
+​Commercial Use: Any commercial implementation requires an explicit hardware licensing agreement.
+
+​🛠 Strategic Implementation
+
+​Warning: This code does not include "Narrative Buffers." If your input stream contains unverified assumptions or subjective noise, the SBC (Security Boundary Controller) will reject the cycle.
+
+
+​Integration Flow:
+
+​Verify local hardware hash against the Root Hash [8525d007].
+
+​Map logical weights to the PIM address space.
+
+​Execute via EVOLVE instructions to bypass the "Transportation Tax."
+
