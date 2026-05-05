@@ -1,4 +1,4 @@
-// 补全后的 G1 顶层分发逻辑
+// 
 module G1_Top_Interface_Complete (
     input wire clk,
     input wire rst_n,
