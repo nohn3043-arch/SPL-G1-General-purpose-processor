@@ -37,6 +37,7 @@ Architecturally minimized data movement delivers dramatic energy savings across 
 State‑native pipeline eliminates long latency paths caused by external memory fetch and writeback.
 - Hardware‑Native Causal Auditing
 Built‑in execution verification for secure, consistent, and repeatable computation.
+- Preliminary simulations indicate a magnitude-level improvement in energy efficiency compared to traditional GPGPU architectures.
  
 SPL‑Core Execution Paradigm
  
@@ -86,3 +87,6 @@ a unified, ultra-low-power, general‑purpose engine for persistent worlds, audi
  
  
 SPL‑G1: State‑Centric 4‑in‑1 Computing for the Next Computational Era
+
+Partnerships & Licensing:
+For commercial licensing, early access to RTL designs, or hardware prototyping partnerships (ASIC/FPGA), please contact: nohn3043@gmail.com.
