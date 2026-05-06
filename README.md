@@ -1,5 +1,11 @@
 SPL‑G1 General‑Purpose Processor
+
  
+⚠️ Important Notice:
+All technologies related to this project have been filed for PCT International Patent Application, Patent Application No.: [Fill in your application number].
+ 
+All hardware implementation codes, configuration files and protocol documents are patent-pending technologies. They are provided for academic reference only.
+Any form of commercial replication, hardware physical implementation, or patent circumvention design is strictly prohibited. 
 A Paradigm Shift in State‑Centric, Ultra-Low-Power Unified Heterogeneous Computing
  
 Overview
