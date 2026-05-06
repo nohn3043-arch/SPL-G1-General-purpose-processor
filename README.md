@@ -1,7 +1,5 @@
 # SPL-G1 General-Purpose Processor
 
-## Overview
-
 SPL-G1 is an experimental heterogeneous processor architecture built on the SPL-Core (Second-Perspective Logic) paradigm. It unifies the primary execution domains traditionally separated across CPU, GPU, and NPU hardware into a single, coherent fabric.  
 
 Designed to match the logical paradigm of the Second-Perspective language and virtual world framework, it natively supports large-scale virtual world ecosystems, logic deduction, and scene rendering.
