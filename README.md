@@ -1,76 +1,82 @@
 SPL‑G1 General‑Purpose Processor
  
-A Paradigm Shift in State‑Centric, Unified Heterogeneous Computing
+A Paradigm Shift in State‑Centric, Ultra-Low-Power Unified Heterogeneous Computing
  
 Overview
  
-SPL‑G1 is an experimental, general‑purpose heterogeneous processor architecture built around the SPL‑Core (Second‑Perspective Logic) execution paradigm. It unifies the traditionally siloed execution domains of scalar computing, parallel rendering, and neural inference into a single, consistent, state‑native fabric.
+SPL‑G1 is an experimental general‑purpose heterogeneous processor architecture built around the SPL‑Core (Second‑Perspective Logic) execution paradigm. It delivers a true 4‑in‑1 unified compute fabric that integrates CPU‑style scalar processing, GPU‑class parallel rendering, NPU‑optimized neural inference, and in‑fabric state storage — all within a single cohesive hardware model.
  
-Built to align with the logical rigor of next‑generation virtual world systems, causal reasoning frameworks, and persistent real‑time simulation, SPL‑G1 redefines computation not as transient data movement, but as traceable, auditable state evolution.
+Designed for persistent virtual worlds, causal reasoning, real‑time simulation, and edge‑grade intelligent systems, SPL‑G1 redefines computation as traceable, auditable state evolution, rather than inefficient, power‑hungry data shuffling.
  
-The era of pipeline‑bound, data‑shuffling computing ends here.
+The era of fragmented accelerators and memory‑bound computing ends here.
  
 Core Architectural Philosophy
  
-SPL‑G1 departs from conventional von Neumann and throughput‑optimized accelerator architectures by centering design around three non‑negotiable principles:
+SPL‑G1 is built around three non‑negotiable design principles that directly enable its signature advantages:
  
-1. Locality above all: Data movement is the primary source of inefficiency, latency, and energy cost. Computation must live where state resides.
-2. State determinism: Execution must be reproducible, verifiable, and anchorable at every logical step.
-3. Unified substrate: Scalar, parallel, and tensor workloads share a single execution model rather than operating across disconnected hardware blocks.
+1. Ultra‑Low‑Power by Architecture
+Data movement is the single largest source of energy waste, latency, and heat. SPL‑G1 eliminates unnecessary off‑fabric data transfer by design, enabling industry‑leading energy efficiency without sacrificing performance.
+2. Truly Unified General‑Purpose Substrate
+No more heterogeneous silos. Scalar logic, parallel throughput, tensor inference, and persistent state coexist in one execution model.
+3. Deterministic, Auditable State by Hardware
+Every computation is anchored, traceable, reproducible, and causally consistent at the hardware level.
  
-The architecture eliminates the traditional separation between compute and memory as a fundamental design choice, not an incremental optimization.
+Key Highlighted Advantages (Public & Non‑Sensitive)
+ 
+- 4‑in‑1 Unified General Compute
+One architecture for CPU, GPU, NPU, and state persistence — no discrete accelerators required.
+- Ultra‑Low‑Power Efficiency
+Architecturally minimized data movement delivers dramatic energy savings across inference, simulation, and general workloads.
+- Near‑Zero Latency Execution Model
+State‑native pipeline eliminates long latency paths caused by external memory fetch and writeback.
+- Hardware‑Native Causal Auditing
+Built‑in execution verification for secure, consistent, and repeatable computation.
  
 SPL‑Core Execution Paradigm
  
-At the heart of SPL‑G1 is a hardware‑native execution cycle that replaces classic fetch‑execute‑writeback behavior with a state‑driven, causality‑aware loop:
+At the heart of SPL‑G1 is a hardware‑native state‑driven cycle that replaces classic von Neumann behavior:
  
 ANCHOR → EVOLVE → AUDIT → STRIP
  
-Each stage operates natively within a unified state fabric, enabling:
- 
-- Persistent, rollback‑safe computation
-- Built‑in execution verification and logical consistency checking
-- Minimal off‑fabric data movement
-- Native support for causal reasoning and deterministic simulation
+This cycle enables persistent state control, built‑in error resilience, minimal data movement, and native logical consistency — all while maintaining ultra‑low power operation.
  
 Architectural Objectives
  
 SPL‑G1 is engineered to deliver four foundational capabilities:
  
-1. Unified general‑purpose & accelerated compute
-One substrate for CPU‑style scalar logic, GPU‑class parallel throughput, and NPU‑optimized tensor inference.
-2. In‑fabric state evolution
-Computation occurs directly within the state array, reducing synchronization overhead and memory traffic.
+1. Unified 4‑in‑1 general‑purpose & accelerated compute
+One substrate for scalar logic, parallel rendering, tensor inference, and persistent state management.
+2. In‑fabric state evolution for ultra‑low power
+Computation occurs where data resides, drastically reducing energy cost and latency.
 3. Deterministic state anchoring
 Hardware‑enforced immutable checkpoints for reproducibility, security, and formal verification.
 4. Causality‑aware execution auditing
-Native tracing of logical dependencies, decision paths, and state transformation without software instrumentation.
+Native tracing of logical dependencies and decision paths without software overhead.
  
 Scope of This Repository
  
-This repository hosts the public, architectural specification, formal semantics, and verification framework for the SPL‑G1 experimental processor.
+This repository hosts the public architectural specification, formal semantics, and high‑level framework for the SPL‑G1 experimental processor.
  
 It includes:
  
 - High‑level architectural principles and execution model definitions
 - Formal specification of the SPL‑Core paradigm
 - Verification rules for state integrity and deterministic execution
-- Conceptual roadmap for ecosystem and toolchain development
+- Conceptual roadmap for toolchain and ecosystem development
  
-This is a research and specification project. No production silicon, RTL implementation, or low‑level hardware design files are included in this public repository.
+This is a research specification project. No production silicon, RTL implementation, or low‑level hardware design files are included in this public repository.
  
 Project Status
  
 - Stage: Experimental research architecture & public specification
-- Type: Open specification (code & implementation restricted to private development)
-- Focus: Architecture innovation, formal model validation, paradigm demonstration
+- Type: Open specification (implementation restricted to private development)
+- Focus: Paradigm innovation, unified compute, ultra-low-power architecture, formal validation
  
 Vision
  
-SPL‑G1 is not a better accelerator—it is a blueprint for a new category of processor: one designed for persistent worlds, auditable intelligence, deterministic simulation, and unified general‑purpose performance.
- 
-It is what comes after the era of accelerator fragmentation and memory‑bound scaling.
+SPL‑G1 is not a better accelerator — it is a new category of processor:
+a unified, ultra-low-power, general‑purpose engine for persistent worlds, auditable intelligence, and the next era of computing.
  
  
  
-SPL‑G1: State‑Centric Computing for the Next Computational Era
+SPL‑G1: State‑Centric 4‑in‑1 Computing for the Next Computational Era
