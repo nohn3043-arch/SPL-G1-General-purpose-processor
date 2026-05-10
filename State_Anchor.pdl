@@ -1,7 +1,7 @@
 // Protocol Description Language for G1 State Anchor
 
 protocol StateAnchorVerification {
-    const HASH_KEY = 0x8525d007;
+    const bit[256]  HASH_KEY = 0x8525d007;
     
     state GLOBAL_STABILITY {
         if (input.logic_chain == VALID) {
