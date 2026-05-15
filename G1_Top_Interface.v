@@ -3,7 +3,7 @@
     // 1. 补全内部信号
     wire [3:0] unit_valids; // 假设4个单元的反馈
     
-    // 2. 【关键】把你的 128MB 计算阵列接进来！
+    // 2. 把 128MB 计算阵列接进来
     // 这样数据才会从 NSM 流向真正的存算单元
     generate
         genvar i;
@@ -22,7 +22,7 @@
     // 3. 修正稳定状态输出：只有所有单元都校验通过，才算 PIM 稳定
     assign pim_state_stable = &unit_valids && sbc_interceptor_ready;
 
-    // 4. 核心逻辑锚定：保持你那个硬核的 Hash 校验
+    // 4. 核心逻辑锚定：保持那个硬核的 Hash 校验
     assign logic_integrity_verified = (hardware_hash_in[255:0] == 256'h...8525d007);
 
 endmodule
