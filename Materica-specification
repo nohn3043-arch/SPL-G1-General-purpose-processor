@@ -1,0 +1,156 @@
+# SPL‑G1 全谱材料因果映射规范
+
+**版本**：1.0  
+**锚定哈希**：`59a4ca22-Universal-Clock-
+## 概述
+
+本规范定义了能够制造 **SPL‑G1 芯片**的全谱材料必须满足的物理层级属性。材料只有在同时满足以下四项因果映射要求时，才被视为与 G1 架构兼容。该规范确保 G1 的逻辑结构可以无损地拓扑在硅基、光子晶体、碳纳米管乃至合成生物逻辑等多种物理载体之上。
+
+---
+
+## 1. 逻辑状态稳定性 —— 二元相位约束
+
+材料必须具备至少两种离散、稳定且可区分的物理状态 \( \sigma_0 \) 和 \( \sigma_1 \)，用于承载 `Φ{fs,x,y} → {True,False}` 的二元审计结果。
+
+- **相位保持**：在器件工作温度范围（例如 ‑40°C 至 125°C）及预期寿命内，状态不发生自发翻转。
+- **转换能量阈值**：\( \sigma_0 \rightarrow \sigma_1 \) 的激活能必须大于环境热涨落噪声的 **10 倍**以上，从根本上抑制“叙事噪声”引起的逻辑错误。
+
+*对应第二视角指令：`Φ` 审计谓词*
+
+---
+
+## 2. 因果路径传导 —— 定向信号约束
+
+材料必须支持**受控的、定向的信号矢量**，用于承载 RA‑BUS 因果总线的因果标签与责任锚点。
+
+- **禁止各向同性扩散**：不允许使用信号以全向扩散方式传播的材料作为 RA‑BUS 的物理载体。
+- **实现示例**：
+  - 光基载体：非对称波导、光子晶体缺陷通道。
+  - 生物载体：酶促反应的定向催化链。
+  - 电子载体：自旋极化输运、纳米磁畴壁移动。
+
+*对应第二视角指令：`ANCHOR`、RA‑BUS 总线协议*
+
+---
+
+## 3. 存算一体近接性 —— PIM 功耗消减
+
+材料必须允许执行单元（Logic Gate）与存储单元（Storage Bit）在纳米尺度上实现三维堆叠或原子级重合，以支持存算一体（PIM）架构。
+
+- **数据迁移功耗**：单次逻辑转换所触发的数据移动功耗必须趋近于 **0**（\( \Delta E_{\text{transport}} \approx 0 \)）。
+- **结构要求**：逻辑与存储单元之间的物理距离应小于信号相干长度或载流子平均自由程，消除传统冯·诺依曼架构的搬运开销。
+
+*对应第二视角指令：`EVOLVE`、PIM 阵列*
+
+---
+
+## 4. 安全边界不可逆性 —— SBC 硬件效力
+
+材料必须提供**物理级的不可逆隔离结构**，用于构建 SBC（安全边界控制器）的硬件防火墙。
+
+- **破坏后果**：安全边界的任何物理破坏（击穿、烧毁、化学分解等）必须导致该区域的**永久性逻辑锁定**，芯片进入熔断状态，无法通过软件或外部指令恢复。
+- **实现示例**：
+  - 电子器件：单向导电结、齐纳击穿区、熔丝阵列。
+  - 光子器件：单向光隔离器、非线性吸收层。
+  - 生物器件：半透膜、变性失活蛋白开关。
+
+*对应第二视角指令：`SBC`、熔断机制（`fuse_blown`）*
+
+---
+
+## 跨材料适配声明
+
+满足上述四项因果映射要求的材料体系包括（但不限于）：
+
+- **硅基及化合物半导体**：SOI、SiC、GaN
+- **光子材料**：Si₃N₄、LiNbO₃、InP、二维环形光子晶体
+- **碳基纳米材料**：SWCNT、单层石墨烯、单晶金刚石
+- **二维层状材料**：MoS₂、黑磷、h‑BN
+- **忆阻材料**：HfO₂、Ta₂O₅、高熵氧化物
+- **前沿合成生物与分子材料**：DNA origami、蛋白质开关、MOF
+
+凡满足本规范的材料，均可作为 SPL‑G1 芯片的物理载体，且 G1 的逻辑架构无需重写即可无损拓扑。
+
+---
+# SPL‑G1 Full‑Spectrum Material Causality Mapping Specification
+
+**Version**: 1.0  
+**Anchor Hash**: `59a4ca22-Universal-Clock-Sync`
+
+---
+
+## Overview
+
+This specification defines the physical‑level properties that **full‑spectrum materials** capable of fabricating SPL‑G1 chips must satisfy. A material is considered compatible with the G1 architecture only when it simultaneously meets the following four causality‑mapping requirements. This ensures that the logical structure of G1 can be losslessly topologically mapped onto various physical substrates, including silicon, photonic crystals, carbon nanotubes, and even synthetic biological logic.
+
+---
+
+## 1. Logic State Stability – Binary Phase Constraint
+
+The material must provide at least two discrete, stable, and distinguishable physical states \( \sigma_0 \) and \( \sigma_1 \) to carry the binary audit result `Φ{fs,x,y} → {True,False}`.
+
+- **State retention**: No spontaneous transition shall occur within the device operating temperature range (e.g., ‑40°C to 125°C) and expected lifetime.
+- **Switching energy threshold**: The activation energy for \( \sigma_0 \rightarrow \sigma_1 \) must exceed ambient thermal noise by at least **a factor of 10**, fundamentally preventing “narrative noise” from inducing unintended logic flips.
+
+*Corresponds to Second‑Perspective instruction: `Φ` audit predicate*
+
+---
+
+## 2. Causal Path Routing – Directional Signal Constraint
+
+The material must support **controlled, directional signal vectors** to carry the causality tags and responsibility anchors of the RA‑BUS causal bus.
+
+- **No isotropic diffusion**: Materials in which signals propagate by omnidirectional diffusion are prohibited as physical carriers of RA‑BUS.
+- **Implementation examples**:
+  - Photonic substrates: asymmetric waveguides, photonic‑crystal defect channels.
+  - Biological substrates: directionally catalysed enzyme reaction chains.
+  - Electronic substrates: spin‑polarised transport, nanomagnetic domain‑wall motion.
+
+*Corresponds to Second‑Perspective instruction: `ANCHOR`, RA‑BUS bus protocol*
+
+---
+
+## 3. Proximity for Processing‑In‑Memory (PIM) – Power Elimination
+
+The material must allow execution units (Logic Gates) and storage units (Storage Bits) to be three‑dimensionally stacked or atomically co‑located at the nanoscale, thereby supporting PIM architecture.
+
+- **Data movement energy**: The energy consumed by data movement triggered by a single logic transition shall approach **0** (\( \Delta E_{\text{transport}} \approx 0 \)).
+- **Structural requirement**: The physical distance between logic and storage units must be shorter than the signal coherence length or carrier mean free path, eliminating the transport overhead of the traditional von Neumann architecture.
+
+*Corresponds to Second‑Perspective instruction: `EVOLVE`, PIM array*
+
+---
+
+## 4. Security Boundary Irreversibility – SBC Hardware Enforcement
+
+The material must provide **physically irreversible isolation structures** to build the hardware firewall of the SBC (Security Boundary Controller).
+
+- **Consequence of breach**: Any physical destruction of the security boundary (breakdown, burn‑out, chemical decomposition, etc.) must cause **permanent logic lock** of the affected region, putting the chip into a blown‑fuse state that cannot be recovered by software or external commands.
+- **Implementation examples**:
+  - Electronic devices: unidirectional junctions, Zener breakdown regions, fuse arrays.
+  - Photonic devices: optical isolators, nonlinear absorption layers.
+  - Biological devices: semipermeable membranes, denatured and deactivated protein switches.
+
+*Corresponds to Second‑Perspective instruction: `SBC`, blow‑fuse mechanism (`fuse_blown`)*
+
+---
+
+## Cross‑Material Compatibility Statement
+
+Material families that satisfy the above four causality‑mapping requirements include (but are not limited to):
+
+- **Silicon‑based & compound semiconductors**: SOI, SiC, GaN
+- **Photonic materials**: Si₃N₄, LiNbO₃, InP, 2D ring photonic crystals
+- **Carbon‑based nanomaterials**: SWCNT, monolayer graphene, single‑crystal diamond
+- **2D layered materials**: MoS₂, black phosphorus, h‑BN
+- **Memristive materials**: HfO₂, Ta₂O₅, high‑entropy oxides
+- **Frontier synthetic biology & molecular materials**: DNA origami, protein switches, MOFs
+
+Any material that meets this specification can serve as a physical substrate for the SPL‑G1 chip, and the logical architecture of G1 can be topologically mapped onto it without rewriting.
+
+---
+
+**Document Control**  
+The interpretation of this specification rests solely with the SPL‑G1 architecture designer. Any technical implementation claiming “SPL‑G1 compatibility” must pass all physical‑layer audits listed in this specification.
+**文档控制**  
+本规范的解释权归 SPL‑G1 架构设计者所有。任何技术实现如需声明“兼容 SPL‑G1”，必须通过本规范所列全部物理层审计。
