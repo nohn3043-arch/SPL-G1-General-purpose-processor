@@ -1,3 +1,5 @@
+# Only trustworthy computation has a future.
+
 # SPL‑G1: Second‑Perspective Logic Universal Core
 
 **A Paradigm Shift in State‑Centric, Ultra‑Low‑Power Unified Heterogeneous Computing**
