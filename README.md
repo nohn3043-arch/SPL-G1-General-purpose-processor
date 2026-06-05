@@ -1,7 +1,6 @@
 # Only trustworthy computation has a future.
 
 # SPL‑G1: Second‑Perspective Logic Universal Core
-
 **A Paradigm Shift in State‑Centric, Ultra‑Low‑Power Unified Heterogeneous Computing**
 “State Anchor Hash 0x8525d007 is the core identity of G1 Architecture. Any unauthorized hardware implementation or software emulation of this logic state will be considered a violation of the SPL (Second Perspective Language) Framework License.”
 ---
