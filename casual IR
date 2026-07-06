@@ -1,0 +1,62 @@
+```json
+{
+  "material": "silicon_cim_28nm_v1",
+  "units": {
+    "delay": "ns",
+    "power": "mw",
+    "area": "um2",
+    "snr": "db"
+  },
+  "cells": {
+    "NS": [
+      {
+        "delay_ns": 1.2,
+        "power_mw": 5.5,
+        "area_um2": 120.0,
+        "snr_db": 45.0,
+        "implementation_spec": {
+          "cell_type": "CIM_SRAM_Filter_Array",
+          "voltage_v": 0.8
+        }
+      }
+    ],
+    "IAP": [
+      {
+        "delay_ns": 0.8,
+        "power_mw": 8.2,
+        "area_um2": 85.0,
+        "snr_db": 50.0,
+        "implementation_spec": {
+          "cell_type": "CIM_Comparator_Logic",
+          "precision": "INT8"
+        }
+      }
+    ],
+    "CCS": [
+      {
+        "delay_ns": 0.1,
+        "power_mw": 1.2,
+        "area_um2": 30.0,
+        "snr_db": 80.0,
+        "implementation_spec": {
+          "cell_type": "Digital_DLL_Sync",
+          "jitter_ps": 15
+        }
+      }
+    ],
+    "STATE": [
+      {
+        "delay_ns": 0.5,
+        "power_mw": 2.0,
+        "area_um2": 45.0,
+        "snr_db": 60.0,
+        "implementation_spec": {
+          "cell_type": "Non_Volatile_RRAM_Anchor",
+          "retention_years": 10
+        }
+      }
+    ]
+  }
+}
+
+```
