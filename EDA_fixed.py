@@ -83,19 +83,34 @@ class CausalIR:
         if missing_outs:
             raise ValueError(f"[IR自检失败] 顶层输出未生成: {missing_outs}")
         
-        # 新增：循环依赖检测（拓扑排序）
-        in_degree = {op: len(op.inputs) for op in self.ops}
-        queue = deque([op for op in self.ops if in_degree[op] == 0])
+        # 循环依赖检测（拓扑排序, Kahn 算法）
+        # 构建变量→生产者映射，计算实际前置算子入度（非参数数量）
+        producers: Dict[str, CausalOp] = {}
+        for op in self.ops:
+            for out_var in op.outputs:
+                if out_var in producers:
+                    raise ValueError(
+                        f"[IR自检失败] 变量 {out_var} 被多于一个算子生产，存在竞争"
+                    )
+                producers[out_var] = op
+        
+        in_degree = {id(op): 0 for op in self.ops}
+        for op in self.ops:
+            for inp in op.inputs:
+                if inp in producers:  # 该输入由前置算子生产
+                    in_degree[id(op)] += 1
+        
+        queue = deque([op for op in self.ops if in_degree[id(op)] == 0])
         processed = 0
         
         while queue:
             op = queue.popleft()
             processed += 1
-            for out in op.outputs:
-                for next_op in self.dataflow.get(out, []):
-                    in_degree[next_op] -= 1
-                    if in_degree[next_op] == 0:
-                        queue.append(next_op)
+            for out_var in op.outputs:
+                for consumer in self.dataflow.get(out_var, []):
+                    in_degree[id(consumer)] -= 1
+                    if in_degree[id(consumer)] == 0:
+                        queue.append(consumer)
         
         if processed != len(self.ops):
             raise ValueError("[IR自检失败] 数据流存在循环依赖")

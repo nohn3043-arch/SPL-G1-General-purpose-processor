@@ -1,0 +1,53 @@
+{
+  "design_name": "causal_chain_demo",
+  "description": "覆盖全部 5 个因果算子 (NS/IAP/LCH/CCS/STATE) 的示例因果图，可用于测试 SP-EDA 全编译流程。",
+  "inputs": [
+    "raw_signal_a",
+    "raw_signal_b"
+  ],
+  "outputs": [
+    "stability_verdict"
+  ],
+  "operators": [
+    {
+      "op_type": "NS",
+      "inputs": ["raw_signal_a"],
+      "outputs": ["stripped_a"],
+      "params": {
+        "target": "logic_only"
+      }
+    },
+    {
+      "op_type": "NS",
+      "inputs": ["raw_signal_b"],
+      "outputs": ["stripped_b"],
+      "params": {}
+    },
+    {
+      "op_type": "IAP",
+      "inputs": ["stripped_a", "stripped_b"],
+      "outputs": ["hidden_assumptions"],
+      "params": {
+        "depth": 3
+      }
+    },
+    {
+      "op_type": "LCH",
+      "inputs": ["hidden_assumptions"],
+      "outputs": ["fragility_report"],
+      "params": {}
+    },
+    {
+      "op_type": "CCS",
+      "inputs": ["stripped_a", "stripped_b"],
+      "outputs": ["synced_signals"],
+      "params": {}
+    },
+    {
+      "op_type": "STATE",
+      "inputs": ["fragility_report", "synced_signals"],
+      "outputs": ["stability_verdict"],
+      "params": {}
+    }
+  ]
+}
