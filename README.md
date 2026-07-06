@@ -103,3 +103,10 @@ SPL‑G1 replaces the classic von Neumann bottleneck with a hardware-native stat
 **Scope of this repository:**
 - High‑level architectural principles and execution model definitions.
 - Formal specification
+
+---
+
+## 📬 Contact
+
+- **全球区 (Global)**: [ai@nohnlins.com](mailto:ai@nohnlins.com)
+- **中国区 (China)**: [ai@tx.nohnlins.com](mailto:ai@tx.nohnlins.com)
