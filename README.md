@@ -29,10 +29,12 @@ SPL-G1-General-purpose-processor/
 │   ├── causal_chain_demo.json          # 全 5 算子链式演示
 │   └── cognitive_audit_demo.json       # 认知审计红线硬拦截用例
 ├── rtl/                    # 硬件层（SystemVerilog）
-│   ├── G1_Top_Interface.v              # G1 顶层接口（当前为片段，待补全 module 头）
+│   ├── G1_Top_Interface.v              # G1 顶层接口（SBC 定序器 + 4 路 CIM 阵列）
+│   ├── spl_cim_causal_unit.sv          # 因果检查单元（四态流水线：NS/IAP/AUDIT/STRIP 硬件化）
 │   └── tb_G1_Top.sv                    # 顶层测试平台
 ├── docs/                   # 规范文档
-│   └── SPL-EDA 说明书.pdf
+│   ├── SPL-EDA 说明书.pdf
+│   └── SPL-G1 Alignment Matrix.pdf    # 材料 / 编译器 / 芯片 三层因果对齐证明
 ├── outputs/                # 生成的网表
 ├── README.md
 ├── Materica-specification  # 跨材料因果映射规范
