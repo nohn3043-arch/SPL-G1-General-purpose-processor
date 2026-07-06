@@ -1,0 +1,47 @@
+```json
+{
+  "name": "Cognitive_Audit_Kernel_Demo",
+  "version": "1.0",
+  "description": "企业级智能体行为红线硬拦截因果图",
+  "nodes": [
+    {
+      "op_id": "op_01",
+      "type": "NS",
+      "inputs": ["raw_prompt_stream"],
+      "outputs": ["stripped_logic"],
+      "params": {
+        "strip_level": "absolute_formal"
+      }
+    },
+    {
+      "op_id": "op_02",
+      "type": "IAP",
+      "inputs": ["stripped_logic"],
+      "outputs": ["verified_premise", "violation_flag"],
+      "params": {
+        "forbidden_matrix_active": true,
+        "target_weight": 0.90
+      }
+    },
+    {
+      "op_id": "op_03",
+      "type": "CCS",
+      "inputs": ["verified_premise", "violation_flag"],
+      "outputs": ["synced_audit_state"],
+      "params": {
+        "sync_mode": "strict_barrier"
+      }
+    },
+    {
+      "op_id": "op_04",
+      "type": "STATE",
+      "inputs": ["synced_audit_state"],
+      "outputs": ["pim_final_anchor"],
+      "params": {
+        "update_mode": "in_situ_evolve"
+      }
+    }
+  ]
+}
+
+```
