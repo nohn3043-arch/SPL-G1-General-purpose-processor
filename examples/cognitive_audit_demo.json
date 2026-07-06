@@ -1,12 +1,11 @@
-```json
 {
-  "name": "Cognitive_Audit_Kernel_Demo",
-  "version": "1.0",
-  "description": "企业级智能体行为红线硬拦截因果图",
-  "nodes": [
+  "design_name": "Cognitive_Audit_Kernel_Demo",
+  "description": "企业级智能体行为红线硬拦截因果图（认知审计内核演示）",
+  "inputs": ["raw_prompt_stream"],
+  "outputs": ["pim_final_anchor"],
+  "operators": [
     {
-      "op_id": "op_01",
-      "type": "NS",
+      "op_type": "NS",
       "inputs": ["raw_prompt_stream"],
       "outputs": ["stripped_logic"],
       "params": {
@@ -14,8 +13,7 @@
       }
     },
     {
-      "op_id": "op_02",
-      "type": "IAP",
+      "op_type": "IAP",
       "inputs": ["stripped_logic"],
       "outputs": ["verified_premise", "violation_flag"],
       "params": {
@@ -24,8 +22,7 @@
       }
     },
     {
-      "op_id": "op_03",
-      "type": "CCS",
+      "op_type": "CCS",
       "inputs": ["verified_premise", "violation_flag"],
       "outputs": ["synced_audit_state"],
       "params": {
@@ -33,8 +30,7 @@
       }
     },
     {
-      "op_id": "op_04",
-      "type": "STATE",
+      "op_type": "STATE",
       "inputs": ["synced_audit_state"],
       "outputs": ["pim_final_anchor"],
       "params": {
@@ -43,5 +39,3 @@
     }
   ]
 }
-
-```

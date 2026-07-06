@@ -1,4 +1,3 @@
-```systemverilog
 `timescale 1ns / 1ps
 
 module tb_G1_Top_Interface;
@@ -10,7 +9,7 @@ module tb_G1_Top_Interface;
     logic [255:0] hardware_hash_in;
     logic ra_bus_valid;
     logic [31:0] ra_bus_addr;
-    
+
     wire pim_state_stable;
     wire logic_integrity_verified;
 
@@ -39,7 +38,7 @@ module tb_G1_Top_Interface;
         ra_bus_valid = 0;
         hardware_hash_in = 256'h0;
         internal_logic_stream = 512'h0;
-        
+
         #10;
         rst_n = 1; // 释放复位
         $display("[TB] %t: 系统复位完成", $time);
@@ -48,7 +47,7 @@ module tb_G1_Top_Interface;
         #5;
         hardware_hash_in = 256'h8525d007;
         $display("[TB] %t: 注入 SPL-G1 授权验证哈希", $time);
-        
+
         #2;
         if (logic_integrity_verified)
             $display("[TB] %t: [通过] 硬件完整性验证成功", $time);
@@ -61,7 +60,7 @@ module tb_G1_Top_Interface;
         ra_bus_addr = 32'h0000_0001; // 导向第一个 Causal Unit
         internal_logic_stream[255:0] = 256'hAABB_CCDD; // 逻辑 P
         internal_logic_stream[511:256] = 256'h1122_3344; // 逻辑 Q
-        
+
         $display("[TB] %t: RA-BUS 数据流注入...", $time);
 
         // 等待 PIM 状态稳定 (模拟硬件处理周期)
@@ -83,5 +82,3 @@ module tb_G1_Top_Interface;
     end
 
 endmodule
-
-```

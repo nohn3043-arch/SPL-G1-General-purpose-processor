@@ -13,6 +13,37 @@
 
 ---
 
+## Repository Layout
+
+```
+SPL-G1-General-purpose-processor/
+├── EDA_fixed.py            # 内核：因果算子类型 / CausalIR / 物理约束 / PDK 加载
+├── eda_parser.py           # 因果描述 JSON → CausalIR 解析器
+├── eda_mapper.py           # 工艺映射器（first_fit / min_delay / min_power / min_area）
+├── eda_exporter.py         # 网表 JSON + 报告输出
+├── eda_cli.py              # 命令行入口
+├── pdk/                    # 工艺库（必须置于此目录内才能被内核加载）
+│   ├── optical_mzi_photonics_v1.json   # 光子 MZI 工艺（5 算子）
+│   └── silicon_cim_v1.json             # 硅基 CIM 28nm 工艺（5 算子）
+├── examples/               # 因果描述样例（design_name / inputs / outputs / operators 格式）
+│   ├── causal_chain_demo.json          # 全 5 算子链式演示
+│   └── cognitive_audit_demo.json       # 认知审计红线硬拦截用例
+├── rtl/                    # 硬件层（SystemVerilog）
+│   ├── G1_Top_Interface.v              # G1 顶层接口（当前为片段，待补全 module 头）
+│   └── tb_G1_Top.sv                    # 顶层测试平台
+├── docs/                   # 规范文档
+│   └── SPL-EDA 说明书.pdf
+├── outputs/                # 生成的网表
+├── README.md
+├── Materica-specification  # 跨材料因果映射规范
+├── SPL-Core.json           # 指令集（ANCHOR / EVOLVE / AUDIT / STRIP）
+└── State_Anchor.pdl        # 状态锚定规范
+```
+
+> 快速开始：`python eda_cli.py --desc examples/cognitive_audit_demo.json --pdk pdk/silicon_cim_v1.json --strategy min_power --output outputs/netlist.json`
+
+---
+
 ## 0x01 Overview
 
 **SPL‑G1** is an experimental general‑purpose heterogeneous processor architecture built around the **SPL‑Core (Second‑Perspective Logic)** execution paradigm. It delivers a true **4‑in‑1 unified compute fabric** that integrates:

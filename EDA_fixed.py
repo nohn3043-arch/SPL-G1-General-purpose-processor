@@ -207,10 +207,12 @@ class MaterialLibrary:
         核心新增函数：动态加载外部 PDK/工艺库 描述文件 (JSON 格式)
         支持通过配置直接切换材料底层，无需改动编译器内核
         """
-        # 新增：路径安全校验，防止路径遍历漏洞
+        # 修复：路径安全校验，防止路径遍历漏洞
+        # 使用「目录 + 分隔符」严格包含判定，避免 "pdk_xxx.json" 前缀绕过
         abs_path = os.path.abspath(file_path)
-        if not abs_path.startswith(cls._allowed_pdk_dir):
-            raise PermissionError(f"[安全拦截] 非法PDK路径：{file_path}，仅允许加载{cls._allowed_pdk_dir}目录下的文件")
+        allowed_dir = os.path.abspath(cls._allowed_pdk_dir)
+        if abs_path != allowed_dir and not abs_path.startswith(allowed_dir + os.sep):
+            raise PermissionError(f"[安全拦截] 非法PDK路径：{file_path}，仅允许加载{allowed_dir}目录下的文件")
         
         # 修复：只捕获特定异常，不捕获系统级异常
         try:
