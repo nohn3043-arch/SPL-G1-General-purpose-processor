@@ -84,6 +84,19 @@
           "function": "register_file_fsm"
         }
       }
+    ],
+    "COMPUTE": [
+      {
+        "delay_ns": 0.5,
+        "power_mw": 25.0,
+        "area_um2": 600.0,
+        "snr_db": 33.0,
+        "implementation_spec": {
+          "cell_type": "photonic_mzi_alu",
+          "precision": "INT32",
+          "wavelength_nm": 1550
+        }
+      }
     ]
   }
 }

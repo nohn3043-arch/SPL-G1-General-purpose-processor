@@ -1,18 +1,53 @@
-// Protocol Description Language for G1 State Anchor
+// Protocol Description Language for G1 State Anchor (v0.2.0)
+//
+// Hardware identity: 256-bit composite anchor
+//   0x8525D007_59A4_CA22_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000
+//   Low 32 bits  (0x8525d007) — core silicon identity, verified in RTL
+//   High 224 bits (59a4ca22...) — specification lineage anchor
+//
+// Verification: 64-cycle nibble handshake.
+// All 256 bits must match for logic_integrity_verified = 1.
 
 protocol StateAnchorVerification {
-    const bit[256]  HASH_KEY = 0x8525d007;
-    
-    state GLOBAL_STABILITY {
-        if (input.logic_chain == VALID) {
-            commit_to_pim_array();
-        } else {
-            trigger_logic_collapse(); // 逻辑崩塌：拒绝执行任何模糊指令
+    const bit[256]  G1_IDENTITY = 256'h8525D007_59A4_CA22_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000;
+    const int       NIBBLE_COUNT = 64;
+
+    state IDLE {
+        if (ra_bus_valid && ra_bus_addr[3]) {
+            // Begin 64-cycle identity verification handshake
+            transition to VERIFYING with nibble_idx = 0, pass = true;
+        } else if (ra_bus_valid && ra_bus_addr[2]) {
+            // Compute request: start causal pipeline
+            transition to COMPUTING with op_mode, operand_a, operand_b;
         }
     }
-    
+
+    state VERIFYING {
+        if (nibble_idx < NIBBLE_COUNT) {
+            expected = G1_IDENTITY[nibble_idx * 4 +: 4];
+            received = hardware_hash_in[3:0];
+            if (received != expected) {
+                // Single mismatch → permanent fail until next reset
+                pass = false;
+            }
+            nibble_idx = nibble_idx + 1;
+            if (nibble_idx == NIBBLE_COUNT) {
+                logic_integrity_verified = pass;
+                transition to IDLE;
+            }
+        }
+    }
+
+    state COMPUTING {
+        // Compute core produces P→Q causal pair
+        // Causal units (4×) independently audit P→Q validity
+        // pim_state_stable = all_units_passed AND sbc_ready
+    }
+
     // 责任闭环锚定：每一比特的权重分配必须追溯到起始逻辑点
     anchoring_point trace_back(bit_weight) {
-        verify(bit_weight.origin == HASH_KEY);
+        verify(bit_weight.origin == G1_IDENTITY);
+        verify(logic_integrity_verified == true);
+        verify(pim_state_stable == true);
     }
 }

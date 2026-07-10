@@ -66,6 +66,30 @@
           "retention_years": 10
         }
       }
+    ],
+    "COMPUTE": [
+      {
+        "delay_ns": 0.9,
+        "power_mw": 12.0,
+        "area_um2": 250.0,
+        "snr_db": 55.0,
+        "implementation_spec": {
+          "cell_type": "CIM_ALU_64b_Pipeline",
+          "precision": "INT64",
+          "throughput_ops_per_cycle": 1
+        }
+      },
+      {
+        "delay_ns": 2.0,
+        "power_mw": 45.0,
+        "area_um2": 800.0,
+        "snr_db": 70.0,
+        "implementation_spec": {
+          "cell_type": "CIM_MAC_Array_16x16",
+          "precision": "INT8",
+          "throughput_ops_per_cycle": 256
+        }
+      }
     ]
   }
 }

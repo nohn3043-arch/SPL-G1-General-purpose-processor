@@ -1,6 +1,8 @@
 {
   "architecture": "SPL-Core-G1",
+  "version": "0.2.0",
   "logic_mode": "Second-Perspective",
+  "anchor_identity": "0x8525d007_59a4ca22-Universal-Clock-Sync",
   "instructions": [
     {
       "op": "ANCHOR",
@@ -21,6 +23,36 @@
       "op": "STRIP",
       "code": "0x04",
       "desc": "激活 NSM，剥离所有非逻辑相关的输入权重"
+    },
+    {
+      "op": "COMPUTE",
+      "code": "0x10",
+      "desc": "通用计算：ADD/SUB/MUL/CMP/LOGIC 五类算数逻辑操作，产出 P→Q 因果对"
+    },
+    {
+      "op": "NS",
+      "code": "0x20",
+      "desc": "叙事剥离：从输入信号中提取纯逻辑成分"
+    },
+    {
+      "op": "IAP",
+      "code": "0x21",
+      "desc": "内隐假设检测：验证 P→Q 推理链中未被声明的预设前提"
+    },
+    {
+      "op": "LCH",
+      "code": "0x22",
+      "desc": "脆弱性对冲：定位逻辑链中最脆弱隐性变量，计算崩塌概率"
+    },
+    {
+      "op": "CCS",
+      "code": "0x23",
+      "desc": "因果时钟同步：确保分布式审计单元的因果序一致"
+    },
+    {
+      "op": "STATE",
+      "code": "0x24",
+      "desc": "状态更新：在 PIM 阵列中就地更新并持久化审计状态"
     }
   ]
 }

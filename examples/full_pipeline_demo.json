@@ -1,0 +1,68 @@
+{
+  "design_name": "full_pipeline_demo",
+  "description": "完整因果计算—审计流水线。覆盖全部 6 个算子（NS/IAP/LCH/CCS/STATE + COMPUTE），并携带被 params_affinity_score 消费的参数。",
+  "inputs": [
+    "raw_instruction_stream",
+    "context_vector"
+  ],
+  "outputs": [
+    "audited_result",
+    "stability_anchor"
+  ],
+  "operators": [
+    {
+      "op_type": "NS",
+      "inputs": ["raw_instruction_stream"],
+      "outputs": ["stripped_instr"],
+      "params": {
+        "strip_level": "absolute_formal",
+        "target": "logic_only"
+      }
+    },
+    {
+      "op_type": "IAP",
+      "inputs": ["stripped_instr", "context_vector"],
+      "outputs": ["verified_premise", "violation_flag"],
+      "params": {
+        "forbidden_matrix_active": true,
+        "target_weight": 0.90,
+        "depth": 3
+      }
+    },
+    {
+      "op_type": "LCH",
+      "inputs": ["violation_flag"],
+      "outputs": ["fragility_report"],
+      "params": {
+        "collapse_d": 0.67
+      }
+    },
+    {
+      "op_type": "CCS",
+      "inputs": ["verified_premise", "fragility_report"],
+      "outputs": ["synced_audit_state"],
+      "params": {
+        "sync_mode": "strict_barrier",
+        "max_skew_ns": 0.5
+      }
+    },
+    {
+      "op_type": "COMPUTE",
+      "inputs": ["synced_audit_state"],
+      "outputs": ["audited_result"],
+      "params": {
+        "precision": "INT32",
+        "throughput": 8
+      }
+    },
+    {
+      "op_type": "STATE",
+      "inputs": ["audited_result"],
+      "outputs": ["stability_anchor"],
+      "params": {
+        "update_mode": "in_situ_evolve",
+        "retention_years": 10
+      }
+    }
+  ]
+}

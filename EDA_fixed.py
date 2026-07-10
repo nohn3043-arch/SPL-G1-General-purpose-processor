@@ -1,7 +1,7 @@
 """
 SP-EDA: 跨材料通用因果编译器内核 (完整增强版)
-Version: 0.3.6
-修复版本：修复10个安全/逻辑漏洞，包含路径遍历防护、线程安全、循环依赖检测等
+Version: 0.4.0
+新增：COMPUTE 算子类型、params 参数消费逻辑、算子级参数校验
 """
 
 import re
@@ -25,6 +25,7 @@ class CausalOpType(Enum):
     VULNERABILITY_HEDGE = "lch"    # 脆弱性对冲 (LCH)
     CAUSAL_CLOCK_SYNC = "ccs"      # 因果时钟同步 (CCS)
     STATE_UPDATE = "state"         # 状态更新 (STATE)
+    COMPUTE = "compute"            # 通用计算 (COMPUTE) — v0.4.0
 
 # 支持前端算子缩写到内核枚举的双向映射
 OP_MAPPING = {
@@ -32,7 +33,8 @@ OP_MAPPING = {
     "IAP": CausalOpType.ASSUMPTION_DETECT,
     "LCH": CausalOpType.VULNERABILITY_HEDGE,
     "CCS": CausalOpType.CAUSAL_CLOCK_SYNC,
-    "STATE": CausalOpType.STATE_UPDATE
+    "STATE": CausalOpType.STATE_UPDATE,
+    "COMPUTE": CausalOpType.COMPUTE
 }
 # 新增反向映射
 REVERSE_OP_MAPPING = {v: k for k, v in OP_MAPPING.items()}
@@ -120,6 +122,127 @@ class CausalIR:
     def clone(self) -> 'CausalIR':
         # 待优化：未来实现增量克隆提升性能，当前保持兼容
         return copy.deepcopy(self)
+
+
+# ==================== 2.5 算子参数消费 (v0.4.0) ====================
+# 此前 params 字段被解析但从不消费。
+# 以下函数将算子级参数转化为对物理单元的选择偏好与实际校验。
+
+# ── 参数校验规则：每个算子类型的合法参数键与边界 ──
+_VALID_PARAMS: Dict[CausalOpType, Dict[str, tuple]] = {
+    CausalOpType.NARRATIVE_STRIP: {
+        "strip_level": (str, ["normal", "absolute_formal"]),
+        "target":       (str, ["logic_only"]),
+    },
+    CausalOpType.ASSUMPTION_DETECT: {
+        "forbidden_matrix_active": (bool, [True, False]),
+        "target_weight":           ((int, float), (0.0, 1.0)),
+        "depth":                   (int, (1, 10)),
+    },
+    CausalOpType.VULNERABILITY_HEDGE: {
+        "weight":     ((int, float), (0.0, 1.0)),
+        "collapse_d": (float, (0.0, 1.0)),
+    },
+    CausalOpType.CAUSAL_CLOCK_SYNC: {
+        "sync_mode":    (str, ["strict_barrier", "loose_eventual"]),
+        "max_skew_ns":  (float, (0.0, 1000.0)),
+    },
+    CausalOpType.STATE_UPDATE: {
+        "update_mode":      (str, ["in_situ_evolve", "dma_transfer"]),
+        "retention_years":  (int, (1, 100)),
+    },
+    CausalOpType.COMPUTE: {
+        "precision":  (str, ["INT8", "INT16", "INT32", "FP16", "FP32"]),
+        "throughput": (int, (1, 4096)),
+    },
+}
+
+
+def validate_op_params(op: CausalOp) -> List[str]:
+    """校验算子 params 的键合法性与值边界。返回警告列表（空列表 = 合法）。"""
+    warnings: List[str] = []
+    rules = _VALID_PARAMS.get(op.op_type)
+    if rules is None:
+        return warnings  # 未知算子类型，静默放行
+
+    for key, value in op.params.items():
+        if key not in rules:
+            warnings.append(
+                f"[参数警告] 算子 {REVERSE_OP_MAPPING.get(op.op_type, '?')} 含未注册参数 '{key}'"
+            )
+            continue
+
+        expected_type, domain = rules[key]
+        # 类型检查
+        if not isinstance(value, expected_type):
+            warnings.append(
+                f"[参数警告] {key} 期望类型 {expected_type}, 实际 {type(value).__name__}"
+            )
+            continue
+
+        # 值域检查
+        if isinstance(domain, list):
+            if value not in domain:
+                warnings.append(
+                    f"[参数警告] {key}='{value}' 不在合法集合 {domain} 中"
+                )
+        elif isinstance(domain, tuple) and len(domain) == 2:
+            lo, hi = domain
+            if not (lo <= value <= hi):
+                warnings.append(
+                    f"[参数警告] {key}={value} 超出范围 [{lo}, {hi}]"
+                )
+    return warnings
+
+
+def params_affinity_score(op: CausalOp, variant) -> float:
+    """
+    根据算子 params 计算该物理变体的适配度（0.0 ~ 1.0）。
+    越高表示 params 对该变体的偏好越强。
+    用于在映射时打破平局或微调策略。
+    """
+    score = 0.5  # 基础分
+    p = op.params
+    op_t = op.op_type
+
+    if op_t == CausalOpType.NARRATIVE_STRIP:
+        # strip_level="absolute_formal" → 偏好低延迟
+        if p.get("strip_level") == "absolute_formal":
+            score += 0.3 * (1.0 - min(variant.delay_ns / 10.0, 1.0))
+
+    elif op_t == CausalOpType.ASSUMPTION_DETECT:
+        # forbidden_matrix_active → 偏好高 SNR
+        if p.get("forbidden_matrix_active"):
+            score += 0.3 * min(variant.snr_db / 80.0, 1.0)
+        # depth > 1 → 需要更大面积以容纳多级管线
+        depth = p.get("depth", 1)
+        if depth > 1:
+            score += 0.2 * min(variant.area_um2 / 500.0, 1.0)
+
+    elif op_t == CausalOpType.VULNERABILITY_HEDGE:
+        # collapse_d 越高 → 对延迟敏感度越低，可接受更大面积
+        collapse_d = p.get("collapse_d", 0.0)
+        if collapse_d > 0.5:
+            score += 0.2 * (1.0 - min(variant.delay_ns / 10.0, 1.0))
+
+    elif op_t == CausalOpType.CAUSAL_CLOCK_SYNC:
+        # sync_mode="strict_barrier" → 偏好低 jitter（低延迟 + 高 SNR）
+        if p.get("sync_mode") == "strict_barrier":
+            score += 0.2 * (1.0 - min(variant.delay_ns / 5.0, 1.0))
+            score += 0.2 * min(variant.snr_db / 80.0, 1.0)
+
+    elif op_t == CausalOpType.STATE_UPDATE:
+        # in_situ_evolve → 偏好低功耗
+        if p.get("update_mode") == "in_situ_evolve":
+            score += 0.3 * (1.0 - min(variant.power_mw / 50.0, 1.0))
+
+    elif op_t == CausalOpType.COMPUTE:
+        # 精度越高 → 偏好 SNRP
+        prec = p.get("precision", "INT8")
+        prec_weights = {"INT8": 0.1, "INT16": 0.2, "INT32": 0.3, "FP16": 0.35, "FP32": 0.4}
+        score += prec_weights.get(prec, 0.1) * min(variant.snr_db / 80.0, 1.0)
+
+    return min(max(score, 0.0), 1.0)
 
 
 # ==================== 3. 物理抽象层 (PAL) 与物理工艺导入 ====================

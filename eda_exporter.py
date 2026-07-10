@@ -42,6 +42,10 @@ def _op_mapping_to_dict(op: OpMapping) -> dict:
             for v in op.alternatives
         ]
 
+    # v0.4.0: 参数校验警告
+    if op.param_warnings:
+        d["param_warnings"] = op.param_warnings
+
     return d
 
 
@@ -126,6 +130,10 @@ def generate_report(result: MappingResult) -> str:
                 lines.append(f"      备选: {', '.join(others)}")
         else:
             lines.append(f"      失败: {op.failed_reason}")
+
+        if op.param_warnings:
+            for w in op.param_warnings:
+                lines.append(f"      {w}")
 
     lines.extend([
         "",

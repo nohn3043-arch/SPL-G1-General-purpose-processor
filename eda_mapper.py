@@ -18,7 +18,8 @@ from enum import Enum
 from EDA_fixed import (
     CausalIR, CausalOp, CausalOpType,
     PhysicalConstraints, ImplementationVariant,
-    MaterialLibrary, REVERSE_OP_MAPPING
+    MaterialLibrary, REVERSE_OP_MAPPING,
+    validate_op_params, params_affinity_score   # v0.4.0
 )
 
 
@@ -39,7 +40,8 @@ class OpMapping:
     selected: Optional[ImplementationVariant] = None
     alternatives: List[ImplementationVariant] = field(default_factory=list)
     all_candidates: List[ImplementationVariant] = field(default_factory=list)
-    failed_reason: Optional[str] = None  # 无满足约束的变体时记录原因
+    failed_reason: Optional[str] = None          # 无满足约束的变体时记录原因
+    param_warnings: List[str] = field(default_factory=list)  # v0.4.0
 
 
 @dataclass
@@ -99,17 +101,46 @@ def _variant_passes(variant: ImplementationVariant,
 
 
 def _select_variant(passing: List[ImplementationVariant],
-                    strategy: MappingStrategy) -> ImplementationVariant:
-    """从满足约束的变体列表中按策略选择一个。"""
-    if strategy == MappingStrategy.FIRST_FIT:
+                    strategy: MappingStrategy,
+                    op: CausalOp = None) -> ImplementationVariant:
+    """从满足约束的变体列表中按策略选择一个。
+    如果只有一个变体，直接返回。
+    如果有多个，用算子 params 的亲和度打分打破平局 (v0.4.0)。
+    """
+    if len(passing) == 1:
         return passing[0]
+
+    # 主策略排序
+    if strategy == MappingStrategy.FIRST_FIT:
+        primary = passing[0]
     elif strategy == MappingStrategy.MIN_DELAY:
-        return min(passing, key=lambda v: v.delay_ns)
+        primary = min(passing, key=lambda v: v.delay_ns)
     elif strategy == MappingStrategy.MIN_POWER:
-        return min(passing, key=lambda v: v.power_mw)
+        primary = min(passing, key=lambda v: v.power_mw)
     elif strategy == MappingStrategy.MIN_AREA:
-        return min(passing, key=lambda v: v.area_um2)
-    return passing[0]
+        primary = min(passing, key=lambda v: v.area_um2)
+    else:
+        primary = passing[0]
+
+    # 亲和度决断：如果主策略最优值和第二名差距 < 5%，用 params 重排序
+    if op is not None and len(passing) > 1:
+        # 找到与 primary 在关键指标上差距 < 5% 的候选
+        def is_close(variant):
+            if strategy == MappingStrategy.MIN_DELAY:
+                return variant.delay_ns <= primary.delay_ns * 1.05
+            elif strategy == MappingStrategy.MIN_POWER:
+                return variant.power_mw <= primary.power_mw * 1.05
+            elif strategy == MappingStrategy.MIN_AREA:
+                return variant.area_um2 <= primary.area_um2 * 1.05
+            return False
+
+        close_candidates = [v for v in passing if is_close(v) or v is primary]
+        if len(close_candidates) > 1:
+            # 按亲和度分从高到低排序，选最高的
+            close_candidates.sort(key=lambda v: params_affinity_score(op, v), reverse=True)
+            return close_candidates[0]
+
+    return primary
 
 
 def map_causal_ir(
@@ -146,6 +177,9 @@ def map_causal_ir(
             outputs=list(op.outputs)
         )
 
+        # v0.4.0: 校验算子参数
+        mapping.param_warnings = validate_op_params(op)
+
         # 获取该算子在该材料下的所有变体
         try:
             all_variants = MaterialLibrary.get_variants(material, op.op_type)
@@ -177,7 +211,7 @@ def map_causal_ir(
             )
             unmapped += 1
         else:
-            selected = _select_variant(passing, strategy)
+            selected = _select_variant(passing, strategy, op)
             mapping.selected = selected
             total_delay += selected.delay_ns
             total_power += selected.power_mw

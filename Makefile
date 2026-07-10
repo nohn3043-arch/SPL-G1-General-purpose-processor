@@ -17,6 +17,7 @@ help:
 	@echo "  make demo-causal       # 运行因果链演示用例"
 	@echo "  make demo-audit        # 运行认知审计用例(低功耗优化)"
 	@echo "  make demo-optical      # 运行光子工艺演示用例"
+	@echo "  make demo-full         # 运行完整流水线(含COMPUTE算子 + params消费)"
 	@echo "  make build DESC=<json> # 编译指定因果设计"
 	@echo "  make sim               # 运行RTL仿真并生成波形"
 	@echo "  make wave              # 打开波形查看器"
@@ -48,6 +49,14 @@ demo-optical:
 		--strategy min_power \
 		--output outputs/netlist_optical.json
 
+# 运行完整流水线演示 (含 COMPUTE 算子 + params 消费)
+.PHONY: demo-full
+demo-full:
+	$(PYTHON) eda_cli.py --desc examples/full_pipeline_demo.json \
+		--pdk pdk/silicon_cim_v1.json \
+		--strategy min_power \
+		--output outputs/netlist_full_pipeline.json
+
 # 编译自定义设计
 # 用法: make build DESC=<desc.json> [PDK=<pdk.json>] [STRATEGY=<strategy>] [OUTPUT=<output.json>]
 PDK ?= pdk/silicon_cim_v1.json
@@ -69,7 +78,7 @@ SIM_BIN = g1_sim
 WAVE_FILE = g1_core_wave.vcd
 .PHONY: sim
 sim:
-	$(IVERILOG) -g2012 -o $(SIM_BIN) rtl/G1_Top_Interface.v rtl/spl_cim_causal_unit.sv rtl/tb_G1_Top.sv
+	$(IVERILOG) -g2012 -o $(SIM_BIN) rtl/G1_Top_Interface.v rtl/g1_compute_core.sv rtl/spl_cim_causal_unit.sv rtl/tb_G1_Top.sv
 	$(VVP) $(SIM_BIN)
 	@echo "仿真完成，波形文件: $(WAVE_FILE)"
 
